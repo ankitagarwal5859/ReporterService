@@ -3,6 +3,21 @@ import { JiraService } from "./JiraService"
 
 class ReporterService {
 
+    validateSDKKey(apikey: string): Promise<any> {
+        return new Promise((resolve, reject) => {
+
+            var sdkKey = process.env.jiraBasicAuth
+            if (apikey == sdkKey) {
+                resolve(true)
+            }
+            else {
+                reject(false)
+            }
+
+        })
+    }
+
+
     createNewTicketWithAttachments(description: string, attachments: any): Promise<any> {
         return new Promise((resolve, reject) => {
             const jiraService = new JiraService()
@@ -24,7 +39,7 @@ class ReporterService {
             // upload attachment
             const jiraService = new JiraService()
             let promises: Promise<any>[] = new Array(2);
-            for (let index = 0; index<attachments.length; index++) {
+            for (let index = 0; index < attachments.length; index++) {
                 promises[index] = new Promise((resolve, reject) => {
                     jiraService.attachmentToTicket(createResult.key, attachments[index]).then(result => resolve(result)).catch(err => reject(err))
                 })
@@ -33,7 +48,7 @@ class ReporterService {
                 //resolve('UPLOADED')
                 // sendConfirmationEmail
                 new EmailService().sendConfirmationEmail("ankitagarwal5859@gmail.com", "Ankit", "Test", "Test").then(emailResult => {
-                    resolve (emailResult)
+                    resolve(emailResult)
                 }).catch(err => {
                     reject(err)
                 })
@@ -44,4 +59,4 @@ class ReporterService {
     }
 }
 
-export {ReporterService}
+export { ReporterService }
