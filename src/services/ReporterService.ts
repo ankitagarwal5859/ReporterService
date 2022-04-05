@@ -11,7 +11,7 @@ class ReporterService {
                 resolve(true)
             }
             else {
-                reject(false)
+                resolve(false)
             }
 
         })
