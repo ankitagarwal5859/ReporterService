@@ -6,7 +6,7 @@ class ReporterService {
     validateSDKKey(apikey: string): Promise<any> {
         return new Promise((resolve, reject) => {
 
-            var sdkKey = process.env.jiraBasicAuth
+            var sdkKey = process.env.apiKey
             if (apikey == sdkKey) {
                 resolve(true)
             }
