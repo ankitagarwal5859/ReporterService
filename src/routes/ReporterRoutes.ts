@@ -10,7 +10,8 @@ router.post('/createTicket', basicAuth, (req: any, res: Response, next: NextFunc
         res.status(400).send('No file uploaded');
     } else {
         const description = req.body.description
-        reporterService.createNewTicketWithAttachments(description, req.files.files).then(result => {
+        console.log('ANkit'+req.files)
+        reporterService.createNewTicketWithAttachments(description, req.files).then(result => {
             res.status(200).send(result);
         }).catch(err => {
             res.status(500).send(`Ticket not created`);
