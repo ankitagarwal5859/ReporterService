@@ -6,12 +6,12 @@ import { IssueDetails } from "../models/IssueDetails"
 
 class ReporterService {
 
-    createNewTicketWithAttachments(userId: string, description: string, attachments: any): Promise<any> {
+    createNewTicketWithAttachments(issueDetails:IssueDetails, attachments: any): Promise<any> {
         return new Promise((resolve, reject) => {
             const jiraService = new JiraService()
-            jiraService.createTicket(description).then(createResult => {
+            jiraService.createTicket(issueDetails).then(createResult => {
                 var response = `Ticket created with id: ${createResult.id} and key: ${createResult.key}`
-                this.uploadAttachments(createResult, attachments, description).then(result => {
+                this.uploadAttachments(createResult, attachments, issueDetails).then(result => {
                     console.log(result)
                     resolve(response)
                 }).catch(err => {
@@ -21,7 +21,7 @@ class ReporterService {
         })
     }
 
-    uploadAttachments(createResult: any, attachments: Array<any>, description: string): Promise<any> {
+    uploadAttachments(createResult: any, attachments: Array<any>, issueDetails: IssueDetails): Promise<any> {
         return new Promise((resolve, reject) => {
             console.log(`uploading attachments ${attachments.length}`)
             // upload attachment
@@ -36,7 +36,7 @@ class ReporterService {
             const gcsService = new GcsService()
             for (let index = n; index<(n*2); index++) {
                 promises[index] = new Promise((resolve, reject) => {
-                    gcsService.sendUploadToGCS(createResult.id, attachments[index-n]).then(result => resolve(result)).catch(err => reject(err))
+                    gcsService.sendUploadToGCS(createResult.key, attachments[index-n]).then(result => resolve(result)).catch(err => reject(err))
                 })
             }
             const dbService = FirestoreDbService.getInstance()
@@ -44,14 +44,12 @@ class ReporterService {
             for (let index = 0; index<n; index++) {
                 filePath[index] = attachments[index].name
             }
-            var issue: IssueDetails = {
-                id: createResult.id,
-                key: createResult.key,
-                description: description,
-                filePath: filePath
-            }
+           
+            issueDetails.id= createResult.id
+            issueDetails.key= createResult.key
+            issueDetails.filePath= filePath
             promises[n*2 + 1] = new Promise((resolve, reject) => {
-                dbService.createDocument('issues', createResult.id, issue).then((result: any) => {
+                dbService.createDocument('issues', createResult.key, issueDetails).then((result: any) => {
                     console.log('Saved in DB')
                     resolve(result)
                 }).catch((err: Error) => reject(err))
@@ -59,7 +57,7 @@ class ReporterService {
             
             Promise.all(promises).then((result: Array<any>) => {
                 // sendConfirmationEmail
-                new EmailService().sendConfirmationEmail("ankitagarwal5859@gmail.com", "Ankit").then(emailResult => {
+                new EmailService().sendConfirmationEmail(issueDetails.email, "User").then(emailResult => {
                     resolve (emailResult)
                 }).catch(err => {
                     reject(err)
