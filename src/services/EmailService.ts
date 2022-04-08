@@ -7,16 +7,13 @@ class EmailService {
 
     private email = process.env.email
 
-    sendConfirmationEmail(toEmail: string, toName: string, orgName: string, password: string): Promise<any> {
+    sendConfirmationEmail(toEmail: string, toName: string): Promise<any> {
         return new Promise((resolve, reject) => {
             const path: string  = 'src/utils/html/EmailTemplate.html';
             read(path).then((html: string) => {
                 var template = Handlebars.compile(html);
                 var replacements = {
-                    displayName: toName,
-                    orgName: orgName,
-                    email: toEmail,
-                    password: password
+                    displayName: toName
                 };
                 var htmlToSend = template(replacements);
                 var mailOptions = {
