@@ -6,13 +6,13 @@ import { ReporterService } from '../services/ReporterService';
 const router = express.Router();
 const reporterService: ReporterService = new ReporterService();
 
-router.post('/createTicket', basicAuth, (req: any, res:Response, next :NextFunction) => {
+router.post('/createTicket', basicAuth, (req: any, res: Response, next: NextFunction) => {
     if (!req.files) {
         res.status(400).send('No file uploaded');
     } else {
-        
-        const issueDetails:IssueDetails=req.body
-        
+
+        const issueDetails: IssueDetails = req.body
+
         reporterService.createNewTicketWithAttachments(issueDetails, req.files.file).then(result => {
             res.status(200).send(result);
         }).catch(err => {
@@ -21,4 +21,4 @@ router.post('/createTicket', basicAuth, (req: any, res:Response, next :NextFunct
     }
 });
 
-export {router as ReportRoutes};
+export { router as ReportRoutes };

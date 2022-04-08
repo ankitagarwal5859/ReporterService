@@ -1,8 +1,8 @@
 export interface IssueDetails {
-    id: string,
-    key: string,
+    id?: string,
+    key?: string,
     description: string,
-    filePath: Array<string>,
+    filePath?: Array<string>,
     title:string,
     email: string,
     locale: string,
